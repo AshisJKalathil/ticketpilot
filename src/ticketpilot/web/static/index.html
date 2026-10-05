@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TicketPilot</title>
+  <meta name="description" content="An AI support agent with tools, memory, MCP, guardrails, human approval, tracing and cost control.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230f766e'/%3E%3Cpath d='M8 11h16v3H8zm0 6h11v3H8z' fill='white'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo" aria-hidden="true"></span>
+      <div>
+        <strong>TicketPilot</strong>
+        <span class="tagline">AI support agent for Acme Trail Co. <em>(a fictional store - nothing here is real)</em></span>
+      </div>
+    </div>
+    <div class="top-actions">
+      <span id="mode" class="badge">…</span>
+      <button id="open-metrics" class="ghost" type="button">Metrics</button>
+      <button id="open-trace" class="ghost" type="button" disabled>Trace</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="panel inbox" aria-label="Inbox">
+      <div class="panel-head"><h2>Inbox</h2><span class="muted small">pick a ticket</span></div>
+      <ul id="tickets" class="tickets"></ul>
+      <details class="compose">
+        <summary>Write your own ticket</summary>
+        <form id="compose">
+          <label>Customer <select id="c-from" required></select></label>
+          <label>Subject <input id="c-subject" maxlength="200" required placeholder="Where is my order?"></label>
+          <label>Message <textarea id="c-body" rows="5" maxlength="4000" required placeholder="Hi, order A1002 hasn't arrived…"></textarea></label>
+          <button type="submit" class="primary">Send to agent</button>
+        </form>
+      </details>
+    </section>
+
+    <section class="panel run" aria-label="Agent run" aria-live="polite">
+      <div id="run-empty" class="empty">
+        <h3>Watch the agent work</h3>
+        <p>Pick a ticket. You'll see it redact personal data, route to a small or reasoning model,
+          call tools (one carrier has no API, so it uses a browser), and pause for your approval
+          before it refunds, emails or deletes anything.</p>
+      </div>
+      <div id="run" hidden>
+        <div class="run-head">
+          <div>
+            <h2 id="run-title"></h2>
+            <p id="run-sub" class="muted small"></p>
+          </div>
+          <span id="run-status" class="status"></span>
+        </div>
+        <div id="run-badges" class="chips"></div>
+        <ol id="timeline" class="timeline"></ol>
+        <div id="draft" class="draft" hidden>
+          <div class="draft-label"><span class="pulse"></span> Drafting reply</div>
+          <pre id="draft-body"></pre>
+        </div>
+      </div>
+    </section>
+
+    <aside class="panel review" aria-label="Review">
+      <div class="panel-head"><h2>Review</h2><span id="pending-count" class="muted small"></span></div>
+      <div id="approvals" class="approvals">
+        <p class="muted small">Refunds, emails and deletions wait here for a human decision.</p>
+      </div>
+      <div id="stats" class="stats" hidden></div>
+      <div id="outcome"></div>
+      <div id="feedback" class="feedback" hidden>
+        <span class="small">Was this run good?</span>
+        <button class="ghost" data-rating="up" type="button" aria-label="Thumbs up">👍</button>
+        <button class="ghost" data-rating="down" type="button" aria-label="Thumbs down">👎</button>
+        <p id="feedback-msg" class="muted small"></p>
+      </div>
+    </aside>
+  </main>
+
+  <div id="drawer" class="drawer" hidden>
+    <div class="drawer-card" role="dialog" aria-modal="true" aria-labelledby="drawer-title">
+      <div class="drawer-head">
+        <h2 id="drawer-title"></h2>
+        <button id="drawer-close" class="ghost" type="button" aria-label="Close">✕</button>
+      </div>
+      <div id="drawer-body" class="drawer-body"></div>
+    </div>
+  </div>
+
+  <footer class="foot muted small">
+    Sandbox: refunds and emails are written to local tables - no money moves and no email is sent.
+    Customer data is fictional.
+  </footer>
+  <script src="/static/app.js" type="module"></script>
+</body>
+</html>

@@ -10,7 +10,6 @@ Only redacted data is ever written to a span.
 
 from __future__ import annotations
 
-import contextvars
 import json
 import os
 import time
@@ -21,8 +20,6 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from ticketpilot.store import Store, dumps
-
-_current: contextvars.ContextVar[Span | None] = contextvars.ContextVar("current_span", default=None)
 
 
 @dataclass
@@ -58,25 +55,33 @@ class Span:
 
 
 class Tracer:
+    """One tracer per run segment.
+
+    The parent span is tracked on an explicit per-tracer stack rather than a
+    ``ContextVar``: the agent is a generator that web servers resume from
+    different worker threads, and a context variable set before a ``yield``
+    cannot be reset after it in another thread's context.
+    """
+
     def __init__(self, store: Store, trace_id: str):
         self.store = store
         self.trace_id = trace_id
         self.jsonl_path = os.environ.get("TICKETPILOT_TRACE_JSONL")
+        self._stack: list[Span] = []
 
     @contextmanager
     def span(self, name: str, kind: str, **attrs: Any) -> Iterator[Span]:
-        parent = _current.get()
+        parent = self._stack[-1] if self._stack else None
         span = Span(trace_id=self.trace_id, name=name, kind=kind,
-                    parent_id=parent.span_id if parent and parent.trace_id == self.trace_id else None,
-                    attrs=dict(attrs))
-        token = _current.set(span)
+                    parent_id=parent.span_id if parent else None, attrs=dict(attrs))
+        self._stack.append(span)
         try:
             yield span
         except BaseException as exc:
             span.error(exc)
             raise
         finally:
-            _current.reset(token)
+            self._stack.remove(span)
             span.end_ts = time.time()
             self._write(span)
 

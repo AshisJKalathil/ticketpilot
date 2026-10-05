@@ -28,13 +28,7 @@ from typing import Any
 
 from ticketpilot.store import Store, dumps
 
-STOPWORDS = set("""
-a an the is are was were be been am i me my mine you your yours we our us it its this that these those
-what whats which who whom how when where why if then than so do does did doing don dont doesn didn can could
-would should will shall may might must to of in on at by for with about from into over under up down out off
-and or but not no yes please thanks thank hi hello hey quick question just any some there their they them
-have has had having get got also too very really much many more most own same such only s t
-""".split())
+STOPWORDS = set(["a", "an", "the", "is", "are", "was", "were", "be", "been", "am", "i", "me", "my", "mine", "you", "your", "yours", "we", "our", "us", "it", "its", "this", "that", "these", "those", "what", "whats", "which", "who", "whom", "how", "when", "where", "why", "if", "then", "than", "so", "do", "does", "did", "doing", "don", "dont", "doesn", "didn", "can", "could", "would", "should", "will", "shall", "may", "might", "must", "to", "of", "in", "on", "at", "by", "for", "with", "about", "from", "into", "over", "under", "up", "down", "out", "off", "and", "or", "but", "not", "no", "yes", "please", "thanks", "thank", "hi", "hello", "hey", "quick", "question", "just", "any", "some", "there", "their", "they", "them", "have", "has", "had", "having", "get", "got", "also", "too", "very", "really", "much", "many", "more", "most", "own", "same", "such", "only", "s", "t"])
 
 PLACEHOLDER = re.compile(r"<[A-Z]+_\d+>")
 

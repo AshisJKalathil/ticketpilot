@@ -103,7 +103,7 @@ class Store:
     """Thread-safe SQLite wrapper (one connection per thread, WAL mode)."""
 
     def __init__(self, path: Path | str):
-        self.path = Path(path)
+        self.path = Path(path).resolve()  # absolute: sandboxed workers run in a temp cwd
         self.path.parent.mkdir(parents=True, exist_ok=True)
         self._local = threading.local()
         self._conn().executescript(SCHEMA)  # executescript manages its own transaction

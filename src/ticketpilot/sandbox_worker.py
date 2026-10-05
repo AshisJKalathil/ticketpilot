@@ -6,16 +6,15 @@ any input, runs the tool and prints one JSON result line on stdout.
 
 from __future__ import annotations
 
+import contextlib
 import json
 import resource
 import sys
 
 
 def _limit(kind: int, value: int) -> None:
-    try:
+    with contextlib.suppress(ValueError, OSError):  # not every limit exists on every platform
         resource.setrlimit(kind, (value, value))  # hard == soft: cannot be raised again
-    except (ValueError, OSError):
-        pass  # not supported on this platform
 
 
 def main() -> None:

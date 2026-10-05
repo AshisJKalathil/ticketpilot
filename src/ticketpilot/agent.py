@@ -68,6 +68,10 @@ class Agent:
         self.store = store
         self.provider = provider or build_provider(settings, stream_delay=stream_delay)
         self.registry = registry or ToolRegistry()
+        if registry is None and settings.mcp_servers_path:
+            from ticketpilot.mcp_client import mount_from_config
+
+            mount_from_config(self.registry, settings.mcp_servers_path)
         self.prompts = prompts or PromptRegistry(settings.prompts_dir)
         self.router = Router(settings, self.prompts)
         self.approvals = ApprovalService(store)

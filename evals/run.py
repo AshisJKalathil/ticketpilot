@@ -159,9 +159,9 @@ def main(argv: list[str] | None = None) -> int:
 
         judge = make_judge(settings)
 
-    with tempfile.TemporaryDirectory(prefix="tp-evals-") as tmp:
-        with ThreadPoolExecutor(max_workers=max(1, args.concurrency)) as pool:
-            results = list(pool.map(lambda c: run_case(c, settings, Path(tmp), judge), cases))
+    with tempfile.TemporaryDirectory(prefix="tp-evals-") as tmp, \
+            ThreadPoolExecutor(max_workers=max(1, args.concurrency)) as pool:
+        results = list(pool.map(lambda c: run_case(c, settings, Path(tmp), judge), cases))
 
     summary = summarize(results, settings)
     failures = check_gate(summary, json.loads(args.gate.read_text())) if args.gate else []

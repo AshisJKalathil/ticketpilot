@@ -90,8 +90,11 @@ class ToolSpec:
     untrusted_fields: tuple[str, ...] = ()  # "field", "list[].field"
     ends_run: bool = False
     tags: tuple[str, ...] = field(default_factory=tuple)
+    schema_override: dict[str, Any] | None = None  # e.g. a JSON schema declared by an MCP server
 
     def definition(self) -> dict[str, Any]:
+        if self.schema_override is not None:
+            return {"name": self.name, "description": self.description, "input_schema": self.schema_override}
         schema = self.input_model.model_json_schema()
         schema.pop("title", None)
         for prop in schema.get("properties", {}).values():
