@@ -35,6 +35,7 @@ ticketpilot = ["web/static/*", "data/kb/*.md", "data/*.jsonl"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = ["."]  # evals/ and finetune/ are top-level packages
 addopts = "-q"
 
 [tool.ruff]
