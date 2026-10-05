@@ -6,6 +6,9 @@
 
 ▶ **[Watch the 60-second demo](docs/demo/ticketpilot-demo.mp4)** · 🌐 **Live demo:** _add your Render/Fly URL here after deploying (see [Deploy](#deploy))_
 
+[![CI](https://github.com/AshisJKalathil/ticketpilot/actions/workflows/ci.yml/badge.svg)](https://github.com/AshisJKalathil/ticketpilot/actions/workflows/ci.yml)
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/AshisJKalathil/ticketpilot)
+
 > Acme Trail Co. is a fictional outdoor-gear store. All customers, orders and emails in this repo are made up, and the demo never moves money or sends email.
 
 ---
@@ -72,7 +75,7 @@ flowchart LR
 |---|---|---|
 | 1 | Agent for one painful, boring workflow | Support-ticket resolution, see [above](#the-painful-boring-workflow) |
 | 2 | Tools, context, memory, MCP | 9 typed tools in [`tools/catalog.py`](src/ticketpilot/tools/catalog.py); KB retrieval via BM25 ([`tools/kb.py`](src/ticketpilot/tools/kb.py)); long-term customer memory (`get_customer_profile` / `save_customer_note`, untrusted notes spotlighted); read-only MCP server ([`mcp_server.py`](src/ticketpilot/mcp_server.py)) and an MCP client that mounts allowlisted external tools ([`mcp_client.py`](src/ticketpilot/mcp_client.py)) |
-| 3 | Evals before prompts | `git log`: the eval commit (`a71d727`) predates every prompt and the agent; [`evals/`](evals) |
+| 3 | Evals before prompts | `git log --reverse --oneline`: the `evals:` commit lands before the `prompts:` and agent commits; [`evals/`](evals) |
 | 4 | Deploy with a live link | [`Dockerfile`](Dockerfile), [`render.yaml`](render.yaml) (free tier), [`fly.toml`](fly.toml); public-demo hardening in [`web/app.py`](src/ticketpilot/web/app.py) |
 | 5 | Small models for easy, reasoning models for hard | [`llm/router.py`](src/ticketpilot/llm/router.py): heuristic, then classifier, then fail-safe to hard; mid-run escalation |
 | 6 | Token, time and cost budgets | [`budget.py`](src/ticketpilot/budget.py): pre-flight + post-hoc + wall-clock; over-budget runs hand off with zero side effects |

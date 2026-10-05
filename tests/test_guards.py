@@ -5,8 +5,9 @@ from ticketpilot.tools.catalog import render_outgoing
 
 def test_redacts_pii_and_secrets_with_stable_placeholders():
     v = Vault()
+    fake_key = "sk-ant-" + "api03-" + "x" * 24  # built at runtime so no key-shaped literal lives in the repo
     text = ("mail maya.chen@example.com or call +1 (415) 555-0142; card 4111 1111 1111 1111; "
-            "ssn 123-45-6789; my password is Hunter2!!; key sk-ant-api03-abcdefghijklmnopqrstuvwx")
+            f"ssn 123-45-6789; my password is Hunter2!!; key {fake_key}")
     out = redact(text, v).text
     for raw in ["maya.chen@example.com", "555-0142", "4111 1111 1111 1111", "123-45-6789", "Hunter2!!", "sk-ant-"]:
         assert raw not in out

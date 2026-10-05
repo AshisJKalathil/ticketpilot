@@ -17,3 +17,6 @@ finetune/out/
 
 # secrets
 .env
+
+# local tooling
+.claude/

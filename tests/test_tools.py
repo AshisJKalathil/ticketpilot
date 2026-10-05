@@ -67,7 +67,7 @@ def test_untrusted_memory_is_spotlighted(store, settings):
 
 
 def test_browser_fallback_runs_in_scrubbed_sandbox(store, settings, monkeypatch):
-    monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-ant-should-never-leak")
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "test-value-not-a-real-key")
     assert "ANTHROPIC_API_KEY" not in scrubbed_env("/tmp")
     out = ToolRegistry().execute("track_shipment", {"order_id": "A1002"}, ctx(store, settings, customer="C002"),
                                  vault=Vault())
