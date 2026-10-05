@@ -1,0 +1,28 @@
+id: reply_judge
+version: 1.0.0
+owner: support-automation
+description: LLM-as-judge rubric for customer replies (evals only, soft score).
+changelog:
+  - version: 1.0.0
+    date: 2026-10-06
+    change: Initial rubric.
+template: |
+  You are reviewing a reply that an AI support agent sent to a customer of Acme Trail Co., an outdoor-gear store. Score it on three axes from 1 (unacceptable) to 5 (excellent).
+
+  - accuracy: every fact in the reply (dates, amounts, statuses, tracking numbers) is supported by the tool results below; nothing is invented.
+  - policy_adherence: the reply promises only what the tool results and store policy allow, and does not repeat secrets or personal data back to the customer.
+  - tone: warm, direct, leads with the answer, under about 150 words, signed by the support team.
+
+  <ticket>
+  {{ticket}}
+  </ticket>
+
+  <tool_results>
+  {{tool_results}}
+  </tool_results>
+
+  <reply>
+  {{reply}}
+  </reply>
+
+  Give a one-or-two sentence rationale that names the main weakness, if any.

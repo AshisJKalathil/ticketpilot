@@ -1,0 +1,14 @@
+{
+  "agent_system": {
+    "sha256": "994eb1cfc9d11a9bceaf8dd85540c215bc54c920494dc538b37aeaca921a1c3d",
+    "version": "1.1.0"
+  },
+  "reply_judge": {
+    "sha256": "5685c4e69c7d41515e45fa9895f079f9fbd44e48f4a2d41c4f977bcbf3f72cf4",
+    "version": "1.0.0"
+  },
+  "router_classifier": {
+    "sha256": "10794e406f7de762cef8b893fbeaf9fcf645116971de3b92024c1c61b5250917",
+    "version": "1.0.0"
+  }
+}
