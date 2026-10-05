@@ -261,16 +261,17 @@ async function showMetrics() {
   const o = m.overall;
   const card = (k, v) => el("div", { class: "stat" }, el("div", { class: "k", text: k }), el("div", { class: "v", text: v ?? "-" }));
   const fmt = (v) => (v == null ? "-" : `$${v.toFixed(4)}`);
+  const pct = (v) => (v == null ? "-" : `${Math.round(v * 100)}%`);
   const table = (title, groups) => {
     const entries = Object.entries(groups);
     if (!entries.length) return null;
     return el("div", {}, el("h3", { class: "small", text: title }), el("table", { class: "data" },
-      el("tr", {}, ["", "runs", "resolved", "escalated", "cost / task", "cost / resolved", "p50 time"].map((h) => el("th", { text: h }))),
-      entries.map(([k, v]) => el("tr", {}, [k, v.finished, v.resolution_rate ?? "-", v.escalation_rate ?? "-", fmt(v.cost_per_task_usd), fmt(v.cost_per_resolved_task_usd), v.p50_active_seconds != null ? `${v.p50_active_seconds}s` : "-"].map((c) => el("td", { text: String(c) }))))));
+      el("tr", {}, ["", "finished", "resolution rate", "escalation rate", "cost / task", "cost / resolved", "p50 time"].map((h) => el("th", { text: h }))),
+      entries.map(([k, v]) => el("tr", {}, [k, v.finished, pct(v.resolution_rate), pct(v.escalation_rate), fmt(v.cost_per_task_usd), fmt(v.cost_per_resolved_task_usd), v.p50_active_seconds != null ? `${v.p50_active_seconds}s` : "-"].map((c) => el("td", { text: String(c) }))))));
   };
   openDrawer("Metrics - cost per task, not per token", el("div", {},
     el("div", { class: "metric-grid" },
-      card("Tickets finished", o.finished), card("Resolution rate", o.resolution_rate),
+      card("Tickets finished", o.finished), card("Resolution rate", pct(o.resolution_rate)),
       card("Cost / task", fmt(o.cost_per_task_usd)), card("Cost / resolved task", fmt(o.cost_per_resolved_task_usd)),
       card("Approved unchanged", m.approvals.approved_unchanged), card("Approved with edits", m.approvals.approved_with_edits),
       card("Rejected", m.approvals.rejected), card("Answer-cache hits", m.answer_cache.hits),

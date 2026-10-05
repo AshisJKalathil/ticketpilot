@@ -55,7 +55,8 @@ class ToolContext:
             "db_path": str(self.store.path), "run_id": self.run_id, "customer_id": self.customer_id,
             "scopes": sorted(self.scopes), "tool_use_id": self.tool_use_id, "attempt": self.attempt,
             "store_date": self.settings.store_date.isoformat(), "portal_base_url": self.settings.portal_base_url,
-            "browser_engine": self.settings.browser_engine, "fault_injection": self.settings.fault_injection,
+            "browser_engine": self.settings.browser_engine, "browser_channel": self.settings.browser_channel,
+            "fault_injection": self.settings.fault_injection,
         }
 
     @classmethod
@@ -63,6 +64,7 @@ class ToolContext:
         settings = Settings(
             db_path=Path(wire["db_path"]), store_date=date.fromisoformat(wire["store_date"]),
             portal_base_url=wire["portal_base_url"], browser_engine=wire["browser_engine"],
+            browser_channel=wire.get("browser_channel"),
             fault_injection=wire.get("fault_injection", {}),
         )
         return cls(store=Store(wire["db_path"]), settings=settings, run_id=wire["run_id"],

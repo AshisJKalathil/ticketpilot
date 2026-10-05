@@ -137,7 +137,7 @@ def _extract_with_playwright(ctx: ToolContext, tracking_number: str) -> dict:
 
     base = ctx.settings.portal_base_url
     with sync_playwright() as pw:
-        browser = pw.chromium.launch(headless=True)
+        browser = pw.chromium.launch(headless=True, channel=ctx.settings.browser_channel or None)
         try:
             page = browser.new_page()
             allowed = ctx.allowed_hosts

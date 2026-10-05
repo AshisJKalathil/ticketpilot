@@ -45,6 +45,7 @@ class Settings:
     store_date: date = date(2026, 10, 6)
     portal_base_url: str = "inproc"
     browser_engine: str = "http"
+    browser_channel: str | None = None  # e.g. "chrome" to drive an installed Chrome instead of bundled Chromium
     prompts_dir: Path = REPO_ROOT / "prompts"
     experiments_path: Path = REPO_ROOT / "config" / "experiments.yaml"
     experiments_enabled: bool = True
@@ -76,7 +77,11 @@ class Settings:
             store_date=date.fromisoformat(_env("TICKETPILOT_STORE_DATE", cls.store_date.isoformat())),
             portal_base_url=_env("TICKETPILOT_PORTAL_BASE_URL", cls.portal_base_url),
             browser_engine=_env("TICKETPILOT_BROWSER_ENGINE", cls.browser_engine),
+            browser_channel=os.environ.get("TICKETPILOT_BROWSER_CHANNEL") or None,
+            prompts_dir=Path(_env("TICKETPILOT_PROMPTS_DIR", str(cls.prompts_dir))),
+            experiments_path=Path(_env("TICKETPILOT_EXPERIMENTS", str(cls.experiments_path))),
             mcp_servers_path=Path(mcp_path) if mcp_path else None,
+            eval_candidates_dir=Path(_env("TICKETPILOT_EVAL_CANDIDATES", str(cls.eval_candidates_dir))),
             public_demo=_env_bool("TICKETPILOT_PUBLIC_DEMO", False),
             daily_spend_cap_usd=float(_env("TICKETPILOT_DAILY_SPEND_CAP_USD", "5.0")),
             rate_limit_per_min=int(_env("TICKETPILOT_RATE_LIMIT_PER_MIN", "10")),

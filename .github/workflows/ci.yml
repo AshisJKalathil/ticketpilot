@@ -1,0 +1,80 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Lint + unit/integration tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12", cache: pip }
+      - run: pip install -e ".[dev]"
+      - run: ruff check src evals tests scripts finetune
+      - run: pytest -q   # includes the prompt-lock check: prompt edits must bump the version
+
+  evals-offline:
+    name: Eval gate (deterministic mock model)
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12", cache: pip }
+      - run: pip install -e .
+      - name: Run golden set and gate on baseline
+        run: python -m evals.run --provider mock --gate evals/baseline.mock.json --out evals/reports/mock.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: eval-report-mock, path: evals/reports/mock.json }
+
+  evals-live:
+    name: Eval gate (real Claude models)
+    needs: test
+    # Costs money: runs on main, or on PRs labelled run-live-evals.
+    if: github.event_name == 'push' || contains(github.event.pull_request.labels.*.name, 'run-live-evals')
+    runs-on: ubuntu-latest
+    env:
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12", cache: pip }
+      - run: pip install -e .
+      - name: Skip notice
+        if: env.ANTHROPIC_API_KEY == ''
+        run: echo "::notice::ANTHROPIC_API_KEY secret not set - live evals skipped"
+      - name: Run golden set against Claude and gate on baseline
+        if: env.ANTHROPIC_API_KEY != ''
+        run: >
+          python -m evals.run --provider anthropic --gate evals/baseline.live.json
+          --concurrency 4 --out evals/reports/live.json
+      - uses: actions/upload-artifact@v4
+        if: always() && env.ANTHROPIC_API_KEY != ''
+        with: { name: eval-report-live, path: evals/reports/live.json }
+
+  deploy:
+    name: Deploy (only after every gate passes)
+    needs: [evals-offline, evals-live]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Trigger Render deploy hook
+        env:
+          HOOK: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        run: |
+          if [ -z "$HOOK" ]; then echo "::notice::RENDER_DEPLOY_HOOK_URL not set - skipping deploy"; exit 0; fi
+          curl -fsS -X POST "$HOOK"

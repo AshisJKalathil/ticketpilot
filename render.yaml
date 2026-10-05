@@ -1,0 +1,19 @@
+# One-click deploy: https://render.com/deploy?repo=<your-github-repo-url>
+services:
+  - type: web
+    name: ticketpilot
+    runtime: docker
+    plan: free
+    autoDeploy: false          # CI triggers deploys via the deploy hook, only after the eval gates pass
+    healthCheckPath: /healthz
+    envVars:
+      - key: TICKETPILOT_PROVIDER
+        value: mock            # set to "anthropic" and add ANTHROPIC_API_KEY to use real Claude
+      - key: TICKETPILOT_PUBLIC_DEMO
+        value: "true"
+      - key: TICKETPILOT_DAILY_SPEND_CAP_USD
+        value: "2.00"
+      - key: TICKETPILOT_MAX_COST_USD
+        value: "0.25"
+      - key: ANTHROPIC_API_KEY
+        sync: false

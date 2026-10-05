@@ -1,0 +1,23 @@
+# Alternative to Render:  fly launch --copy-config --no-deploy && fly deploy
+app = "ticketpilot-demo"
+primary_region = "sjc"
+
+[env]
+  PORT = "8080"
+  TICKETPILOT_PROVIDER = "mock"
+  TICKETPILOT_PUBLIC_DEMO = "true"
+  TICKETPILOT_DAILY_SPEND_CAP_USD = "2.00"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+
+  [[http_service.checks]]
+    interval = "30s"
+    timeout = "5s"
+    grace_period = "10s"
+    method = "GET"
+    path = "/healthz"
