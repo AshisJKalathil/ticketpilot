@@ -47,6 +47,7 @@ class Settings:
     browser_engine: str = "http"
     prompts_dir: Path = REPO_ROOT / "prompts"
     experiments_path: Path = REPO_ROOT / "config" / "experiments.yaml"
+    experiments_enabled: bool = True
     mcp_servers_path: Path | None = None
     eval_candidates_dir: Path = REPO_ROOT / "evals" / "candidates"
 

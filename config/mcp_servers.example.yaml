@@ -1,0 +1,11 @@
+# External MCP servers whose tools TicketPilot may mount.
+# Enable with: TICKETPILOT_MCP_SERVERS=config/mcp_servers.example.yaml
+# Every mounted tool is treated as third-party: output is schema-checked,
+# redacted, spotlighted as untrusted and scanned for injection.
+servers:
+  - name: kb
+    command: python
+    args: ["-m", "ticketpilot.mcp_server", "--read-only"]
+    prefix: "kb_"
+    scopes: ["kb:read"]
+    allow_tools: ["search_policy"]     # explicit allowlist - never mount everything

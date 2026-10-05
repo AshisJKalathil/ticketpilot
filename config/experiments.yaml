@@ -1,0 +1,14 @@
+# Model experiments on live traffic. Assignment = hash(name + ticket_id) < traffic.
+# status: draft | running | stopped. Evals always run with experiments disabled.
+experiments:
+  - name: easy-route-sonnet-5-5
+    status: running
+    route: easy
+    traffic: 0.10            # 10% of easy-route tickets get the treatment
+    control:
+      model: claude-haiku-4-5
+    treatment:
+      model: claude-sonnet-5-5
+    hypothesis: >
+      Sonnet 5.5 resolves more easy tickets without human edits; check whether the
+      quality gain is worth ~2x cost per task before widening the slice.
